@@ -11,7 +11,7 @@ export function Header() {
           <Icon>
             <Logo />
           </Icon>
-          <Text weight="bold">SAnalytics</Text>
+          <Text weight="bold">Sun Analytics</Text>
         </Row>
       </a>
       <Row alignItems="center" gap>

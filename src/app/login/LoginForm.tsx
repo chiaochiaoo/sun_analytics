@@ -35,7 +35,7 @@ export function LoginForm() {
       <Icon size="lg">
         <Logo />
       </Icon>
-      <Heading>SAnalytics</Heading>
+      <Heading>Sun Analytics</Heading>
       <Form onSubmit={handleSubmit} error={getErrorMessage(error)}>
         <FormField
           label={formatMessage(labels.username)}
