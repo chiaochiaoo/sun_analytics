@@ -6,7 +6,7 @@ import { Logo } from '@/components/svg';
 export function Header() {
   return (
     <Row as="header" justifyContent="space-between" alignItems="center" paddingY="3">
-      <a href="https://sunanalytics.io" target="_blank" rel="noopener">
+      <a href="https://sunanalytics.ca" target="_blank" rel="noopener">
         <Row alignItems="center" gap>
           <Icon>
             <Logo />
