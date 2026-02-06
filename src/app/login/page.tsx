@@ -10,5 +10,5 @@ export default async function () {
 }
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Sun Analytics',
 };
