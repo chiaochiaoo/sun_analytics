@@ -46,5 +46,4 @@ export const metadata: Metadata = {
     template: '%s | Sun Analytics',
     default: 'Sun Analytics',
   },
-  },
 };

@@ -1,13 +1,13 @@
 {
-  "name": "umami",
+  "name": "sun-analytics",
   "version": "3.0.3",
   "description": "A modern, privacy-focused alternative to Google Analytics.",
-  "author": "Umami Software, Inc. <hello@umami.is>",
+  "author": "Sun Analytics <hello@sunanalytics.io>",
   "license": "MIT",
-  "homepage": "https://umami.is",
+  "homepage": "https://sunanalytics.ca",
   "repository": {
     "type": "git",
-    "url": "https://github.com/umami-software/umami.git"
+    "url": "https://github.com/sunanalytics/sunanalytics.git"
   },
   "type": "module",
   "scripts": {
