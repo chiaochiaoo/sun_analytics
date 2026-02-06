@@ -11,7 +11,8 @@ export default function ({ children }) {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Admin | Umami',
-    default: 'Admin | Umami',
+    template: '%s | Admin | Sun Analytics',
+    default: 'Admin | Sun Analytics',
+  },
   },
 };
