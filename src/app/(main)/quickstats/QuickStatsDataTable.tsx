@@ -4,6 +4,7 @@ import { Text } from '@umami/react-zen';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DataGrid } from '@/components/common/DataGrid';
+import { Favicon } from '@/components/common/Favicon';
 import { useApi, useLoginQuery, useNavigation, useUserWebsitesQuery } from '@/components/hooks';
 import { ChevronDown, ChevronUp } from '@/components/icons';
 
@@ -61,7 +62,7 @@ function QuickStatsInner({ websites }: { websites: any[] }) {
 
   const rows = useMemo(() => {
     return websites.map((site, si) => {
-      const row: Record<string, any> = { id: site.id, name: site.name };
+      const row: Record<string, any> = { id: site.id, name: site.name, domain: site.domain };
       PERIODS.forEach(({ key }, pi) => {
         const d = queries[si * PERIODS.length + pi]?.data as any;
         const visits = d?.visits ?? 0;
@@ -182,7 +183,10 @@ function QuickStatsInner({ websites }: { websites: any[] }) {
                   borderRight: '1px solid var(--border-color, #e5e7eb)',
                 }}
               >
-                <Link href={renderUrl(`/websites/${row.id}`, false)}>{row.name}</Link>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Favicon domain={row.domain} />
+                  <Link href={renderUrl(`/websites/${row.id}`, false)}>{row.name}</Link>
+                </span>
               </td>
               {METRICS.flatMap(({ key: mk, fmt }) =>
                 PERIODS.map(({ key: pk }) => (
