@@ -1,6 +1,6 @@
 'use client';
 import { useQueries } from '@tanstack/react-query';
-import { DataColumn, DataTable, Text } from '@umami/react-zen';
+import { Text } from '@umami/react-zen';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DataGrid } from '@/components/common/DataGrid';
@@ -39,48 +39,7 @@ const METRICS = [
 ] as const;
 
 // ---------------------------------------------------------------------------
-// Clickable sort header
-// ---------------------------------------------------------------------------
-function SortHeader({
-  metric,
-  period,
-  colKey,
-  sortKey,
-  sortDir,
-  onSort,
-}: {
-  metric: string;
-  period: string;
-  colKey: string;
-  sortKey: string;
-  sortDir: 'asc' | 'desc';
-  onSort: (key: string) => void;
-}) {
-  const active = sortKey === colKey;
-  return (
-    <button
-      onClick={() => onSort(colKey)}
-      style={{
-        all: 'unset',
-        cursor: 'pointer',
-        display: 'inline-flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '1px',
-        opacity: active ? 1 : 0.7,
-      }}
-    >
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-        {metric}
-        {active && (sortDir === 'desc' ? <ChevronDown size={11} /> : <ChevronUp size={11} />)}
-      </span>
-      <span style={{ opacity: 0.6, fontSize: '0.75em' }}>{period}</span>
-    </button>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Inner table (receives already-loaded websites list)
+// Inner table
 // ---------------------------------------------------------------------------
 function QuickStatsInner({ websites }: { websites: any[] }) {
   const { get } = useApi();
@@ -90,7 +49,6 @@ function QuickStatsInner({ websites }: { websites: any[] }) {
 
   const now = useMemo(() => Date.now(), []);
 
-  // Fetch all (website × period) combinations in parallel
   const queries = useQueries({
     queries: websites.flatMap(site =>
       PERIODS.map(({ key, ms }) => ({
@@ -101,7 +59,6 @@ function QuickStatsInner({ websites }: { websites: any[] }) {
     ),
   });
 
-  // Build flat row per website
   const rows = useMemo(() => {
     return websites.map((site, si) => {
       const row: Record<string, any> = { id: site.id, name: site.name };
@@ -138,45 +95,129 @@ function QuickStatsInner({ websites }: { websites: any[] }) {
     [rows, sortKey, sortDir],
   );
 
-  return (
-    <DataTable data={sortedRows}>
-      <DataColumn id="name" label="Name" width="150px">
-        {(row: any) => <Link href={renderUrl(`/websites/${row.id}`, false)}>{row.name}</Link>}
-      </DataColumn>
+  const th: React.CSSProperties = {
+    padding: '6px 12px',
+    textAlign: 'right',
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+    borderBottom: '1px solid var(--border-color, #e5e7eb)',
+  };
 
-      {/* One column per (metric × period), grouped by metric */}
-      {METRICS.flatMap(({ key: mk, label: ml, fmt }) =>
-        PERIODS.map(({ key: pk, label: pl }) => {
-          const colKey = `${mk}_${pk}`;
-          return (
-            <DataColumn
-              key={colKey}
-              id={colKey}
-              label={
-                (
-                  <SortHeader
-                    metric={ml}
-                    period={pl}
-                    colKey={colKey}
-                    sortKey={sortKey}
-                    sortDir={sortDir}
-                    onSort={handleSort}
-                  />
-                ) as any
-              }
-              align="end"
+  const td: React.CSSProperties = {
+    padding: '8px 12px',
+    textAlign: 'right',
+    whiteSpace: 'nowrap',
+    borderBottom: '1px solid var(--border-color, #e5e7eb)',
+  };
+
+  return (
+    <div style={{ overflowX: 'auto', width: '100%' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+        <thead>
+          {/* Row 1: metric group labels */}
+          <tr>
+            <th
+              style={{
+                ...th,
+                textAlign: 'left',
+                borderRight: '1px solid var(--border-color, #e5e7eb)',
+              }}
+              rowSpan={2}
             >
-              {(row: any) => <Text>{fmt(row[colKey] ?? 0)}</Text>}
-            </DataColumn>
-          );
-        }),
-      )}
-    </DataTable>
+              Name
+            </th>
+            {METRICS.map(({ key, label }) => (
+              <th
+                key={key}
+                colSpan={PERIODS.length}
+                style={{
+                  ...th,
+                  textAlign: 'center',
+                  borderLeft: '1px solid var(--border-color, #e5e7eb)',
+                  paddingBottom: '2px',
+                }}
+              >
+                {label}
+              </th>
+            ))}
+          </tr>
+          {/* Row 2: period sub-headers (clickable for sort) */}
+          <tr>
+            {METRICS.flatMap(({ key: mk, fmt: _ }) =>
+              PERIODS.map(({ key: pk, label: pl }) => {
+                const colKey = `${mk}_${pk}`;
+                const active = sortKey === colKey;
+                return (
+                  <th
+                    key={colKey}
+                    style={{
+                      ...th,
+                      paddingTop: '2px',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      opacity: active ? 1 : 0.55,
+                      borderLeft:
+                        pk === '24h' ? '1px solid var(--border-color, #e5e7eb)' : undefined,
+                    }}
+                    onClick={() => handleSort(colKey)}
+                  >
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                      {pl}
+                      {active &&
+                        (sortDir === 'desc' ? <ChevronDown size={10} /> : <ChevronUp size={10} />)}
+                    </span>
+                  </th>
+                );
+              }),
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedRows.map(row => (
+            <tr key={row.id} style={{ verticalAlign: 'middle' }}>
+              <td
+                style={{
+                  ...td,
+                  textAlign: 'left',
+                  borderRight: '1px solid var(--border-color, #e5e7eb)',
+                }}
+              >
+                <Link href={renderUrl(`/websites/${row.id}`, false)}>{row.name}</Link>
+              </td>
+              {METRICS.flatMap(({ key: mk, fmt }) =>
+                PERIODS.map(({ key: pk }) => (
+                  <td
+                    key={`${mk}_${pk}`}
+                    style={{
+                      ...td,
+                      borderLeft:
+                        pk === '24h' ? '1px solid var(--border-color, #e5e7eb)' : undefined,
+                    }}
+                  >
+                    <Text>{fmt(row[`${mk}_${pk}`] ?? 0)}</Text>
+                  </td>
+                )),
+              )}
+            </tr>
+          ))}
+          {sortedRows.length === 0 && (
+            <tr>
+              <td
+                colSpan={1 + METRICS.length * PERIODS.length}
+                style={{ ...td, textAlign: 'center', opacity: 0.5 }}
+              >
+                No websites found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Public: loads website list, then delegates to QuickStatsInner
+// Public
 // ---------------------------------------------------------------------------
 export function QuickStatsDataTable({ teamId }: { teamId?: string }) {
   const { user } = useLoginQuery();
