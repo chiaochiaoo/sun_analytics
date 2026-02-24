@@ -332,6 +332,7 @@ export const labels = defineMessages({
   links: { id: 'label.links', defaultMessage: 'Links' },
   pixel: { id: 'label.pixel', defaultMessage: 'Pixel' },
   pixels: { id: 'label.pixels', defaultMessage: 'Pixels' },
+  quickStats: { id: 'label.quick-stats', defaultMessage: 'QuickStats' },
   addBoard: { id: 'label.add-board', defaultMessage: 'Add board' },
   addLink: { id: 'label.add-link', defaultMessage: 'Add link' },
   addPixel: { id: 'label.add-pixel', defaultMessage: 'Add pixel' },
